@@ -7,9 +7,9 @@ class Program
         const int maxHp = 100;
         const int maxOxygen = 10;
         const int maxBattery = 6;
-        const int maxRecoveryUses = 3;
-        const int specialCost = 2;
-        const int barLength = 20;
+        const int maxRecoveryUses = 3; // макс кол-во баллонов кислорода
+        const int specialCost = 2; // стоимость мощного разряда фонаря
+        const int barLength = 20; // длина визуальной шкалы
 
         int playerHp = maxHp;
         int oxygen = maxOxygen;
@@ -30,6 +30,7 @@ class Program
         Console.WriteLine("Главная задача — выжить и выбраться наружу.");
         Console.WriteLine();
 
+        // Цикл for используется для прохождения трёх волн врагов
         for (int wave = 1; wave <= 3; wave++)
         {
             string enemyName;
@@ -70,6 +71,7 @@ class Program
 
             while (playerHp > 0 && enemyHp > 0 && oxygen > 0)
             {
+                // Рассчитываем количество заполненных блоков шкалы hp
                 int hpBlocks = playerHp * barLength / maxHp;
 
                 Console.WriteLine();
@@ -138,6 +140,8 @@ class Program
                     Console.WriteLine("4 — Использовать баллон кислорода");
                     Console.Write("Ваш выбор: ");
 
+                    // TryParse позволяет проверить ввод без ошибки программы,
+                    // если пользователь введет не число
                     isValid = int.TryParse(Console.ReadLine(), out action) && action >= 1 && action <= 4;
 
                     if (!isValid)
@@ -148,7 +152,8 @@ class Program
                     }
 
                 } while (!isValid);
-
+                
+                // Игрок не защищается
                 bool isDefending = false;
 
                 switch (action)
@@ -185,6 +190,7 @@ class Program
                         break;
 
                     case 3:
+                        // Включается защита на текущий ход
                         isDefending = true;
 
                         Console.ForegroundColor = ConsoleColor.Yellow;
@@ -194,6 +200,7 @@ class Program
                         break;
 
                     case 4:
+                        // Проверяем, остались ли баллоны
                         if (recoveryUses <= 0)
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
@@ -222,6 +229,7 @@ class Program
                         break;
                 }
 
+                // Проверка: был ли враг побеждён после действия игрока
                 if (enemyHp <= 0)
                 {
                     enemyHp = 0;
@@ -234,6 +242,7 @@ class Program
                     break;
                 }
 
+                // Случайный урон врага
                 int enemyDamage = random.Next(enemyMinDamage, enemyMaxDamage + 1);
 
                 if (isDefending)
@@ -248,6 +257,7 @@ class Program
                 Console.WriteLine($"{enemyName} нанёс вам {enemyDamage} урона.");
                 Console.ResetColor();
 
+                // Проверка: умер ли игрок
                 if (playerHp <= 0)
                 {
                     playerHp = 0;
@@ -260,12 +270,14 @@ class Program
                     break;
                 }
 
+                // После хода игрок теряет 1 ед кислорода
                 oxygen--;
 
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
                 Console.WriteLine($"Подземелье расходует кислород. Осталось: {oxygen}");
                 Console.ResetColor();
 
+                // Если кислород закончился, бой прекращается.
                 if (oxygen <= 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -276,6 +288,7 @@ class Program
                 }
             }
 
+            // Игрок умер или закончился кислород - поражение
             if (playerHp <= 0 || oxygen <= 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -295,6 +308,7 @@ class Program
             Console.ResetColor();
         }
 
+        // Если игрок прошёл 3 волны и жив - победа
         if (playerHp > 0 && oxygen > 0)
         {
             Console.ForegroundColor = ConsoleColor.Green;
